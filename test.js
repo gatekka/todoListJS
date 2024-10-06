@@ -49,11 +49,9 @@ function askAndReceive(question) {
 }
 
 async function main() {
-  const userOutput = await askAndReceive("Banana or Hotdog?\nChoice: ");
-  console.log(`Received the output: ${userOutput}`);
-
-  const userOutput2 = await askAndReceive("1) Add Task\n2) List Task\nChoose Option: ");
-  console.log(`Received the output: ${userOutput2}`);
+  const userChoice = await askAndReceive("1) Add Task\n2) List Task\nChoose Option: ");
+  console.log(`Received the output: ${userChoice}`);
+  userInput(userChoice);
 }
 
 main();
