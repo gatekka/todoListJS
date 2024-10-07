@@ -1,9 +1,5 @@
 let tasks = [];
 
-// function colorText(text, colorCode) {
-//   return `\x1b[${colorCode}m${text}\x1b[0m`;
-// }
-
 const colorText = {
   red(text) { return `\x1b[31m${text}\x1b[0m`; },
   green(text) { return `\x1b[32m${text}\x1b[0m`; },
@@ -14,6 +10,24 @@ const colorText = {
   white(text) { return `\x1b[37m${text}\x1b[0m`; },
 }
 
+async function awaitInputMatch(key = "") {
+  switch (key) {
+    case "":
+      console.log(`\nPress ${colorText.red("Enter")} To Exit`);
+      break;
+    default:
+      console.log(`\nType '${colorText.red(key)}' To Exit`);
+      break;
+  }
+
+  let isPressedEnter;
+  do {
+    isPressedEnter = await getAnswerFromPrompt("");
+  } while (isPressedEnter != key) {
+
+  }
+}
+
 function createTask(taskName) {
   return { taskName, isComplete: false };
 }
@@ -21,7 +35,6 @@ function createTask(taskName) {
 async function addTask() {
   const taskName = await getAnswerFromPrompt("Enter task name: ");
   tasks = tasks.filter(item => item !== undefined);
-  // tasks[tasks.length] = { taskName, Checked: false };
   tasks[tasks.length] = createTask(taskName);
   console.clear();
   console.log(`Added task: ${taskName}\n`);
@@ -31,13 +44,11 @@ async function addTask() {
 async function listTasks(callMain = true) {
   tasks = tasks.filter(item => item !== undefined);
   for (let i = 0; i < tasks.length; i++) {
-    // console.log(tasks[i]);
-    // console.log(`[${colorText(i, 34)}] { Task: ${colorText(tasks[i].taskName, 32)}, Checked: ${colorText(tasks[i].Checked, 33)} }`);
     console.log(`[${colorText.blue(i)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${colorText.yellow(tasks[i].isComplete)} }`);
   }
 
   if (callMain) {
-    await getAnswerFromPrompt("\nPress Enter To Exit");
+    await awaitInputMatch();
     console.clear();
     main();
   }
@@ -46,20 +57,26 @@ async function listTasks(callMain = true) {
 async function markTaskComplete() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
+
   tasks[selectedTask].isComplete = true;
   console.clear();
   listTasks(false);
-  console.log();
+
+  await awaitInputMatch();
+  console.clear();
   main();
 }
 
 async function deleteTask() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
+
   delete tasks[selectedTask];
   console.clear();
   listTasks(false);
-  console.log();
+
+  await awaitInputMatch();
+  console.clear();
   main();
 }
 
