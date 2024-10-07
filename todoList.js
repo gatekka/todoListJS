@@ -1,19 +1,45 @@
 let tasks = [];
 
+// function colorText(text, colorCode) {
+//   return `\x1b[${colorCode}m${text}\x1b[0m`;
+// }
+
+const colorText = {
+  red(text) { return `\x1b[31m${text}\x1b[0m`; },
+  green(text) { return `\x1b[32m${text}\x1b[0m`; },
+  yellow(text) { return `\x1b[33m${text}\x1b[0m`; },
+  blue(text) { return `\x1b[34m${text}\x1b[0m`; },
+  purple(text) { return `\x1b[35m${text}\x1b[0m`; },
+  cyan(text) { return `\x1b[36m${text}\x1b[0m`; },
+  white(text) { return `\x1b[37m${text}\x1b[0m`; },
+}
+
+function createTask(taskName) {
+  return { taskName, Checked: false };
+}
+
 async function addTask() {
-  const taskname = await getAnswerFromPrompt("Enter task name: ");
+  const taskName = await getAnswerFromPrompt("Enter task name: ");
   tasks = tasks.filter(item => item !== undefined);
-  console.log(`Added task: ${taskname}`);
-  tasks[tasks.length] = { taskname, Checked: false };
+  // tasks[tasks.length] = { taskName, Checked: false };
+  tasks[tasks.length] = createTask(taskName);
+  console.clear();
+  console.log(`Added task: ${taskName}\n`);
   main();
 }
 
-function listTasks() {
+function listTasks(callMain = true) {
+  tasks = tasks.filter(item => item !== undefined);
   for (let i = 0; i < tasks.length; i++) {
-    console.log(i);
-    console.log(tasks[i]);
+    // console.log(tasks[i]);
+    // console.log(`[${colorText(i, 34)}] { Task: ${colorText(tasks[i].taskName, 32)}, Checked: ${colorText(tasks[i].Checked, 33)} }`);
+    console.log(`[${colorText.blue(i)}] { Task: ${colorText.green(tasks[i].taskName)}, Checked: ${colorText.yellow(tasks[i].Checked)} }`);
   }
-  main();
+  console.log();
+
+  if (callMain) {
+    main();
+  }
 }
 
 function markTaskComplete() {
@@ -21,11 +47,11 @@ function markTaskComplete() {
 }
 
 async function deleteTask() {
-  console.log(tasks);
+  listTasks(false);
   const selectedTask = await getAnswerFromPrompt("Select task # to delete: ");
   console.clear();
   delete tasks[selectedTask];
-  console.log(tasks);
+  listTasks(false);
   main();
 }
 
@@ -64,8 +90,9 @@ function getAnswerFromPrompt(question) {
 }
 
 async function main() {
-  const answer = await getAnswerFromPrompt("1) Add Task\n2) List Task\n4) Delete Task\nChoose Option: ");
+  const answer = await getAnswerFromPrompt("1) Add Task\n2) List Task\n4) Delete Task\n\nChoose Option: ");
   userInput(answer);
 }
 
+console.clear();
 main();
