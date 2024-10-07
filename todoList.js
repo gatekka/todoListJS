@@ -15,7 +15,7 @@ const colorText = {
 }
 
 function createTask(taskName) {
-  return { taskName, Checked: false };
+  return { taskName, isComplete: false };
 }
 
 async function addTask() {
@@ -28,30 +28,38 @@ async function addTask() {
   main();
 }
 
-function listTasks(callMain = true) {
+async function listTasks(callMain = true) {
   tasks = tasks.filter(item => item !== undefined);
   for (let i = 0; i < tasks.length; i++) {
     // console.log(tasks[i]);
     // console.log(`[${colorText(i, 34)}] { Task: ${colorText(tasks[i].taskName, 32)}, Checked: ${colorText(tasks[i].Checked, 33)} }`);
-    console.log(`[${colorText.blue(i)}] { Task: ${colorText.green(tasks[i].taskName)}, Checked: ${colorText.yellow(tasks[i].Checked)} }`);
+    console.log(`[${colorText.blue(i)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${colorText.yellow(tasks[i].isComplete)} }`);
   }
-  console.log();
 
   if (callMain) {
+    await getAnswerFromPrompt("\nPress Enter To Exit");
+    console.clear();
     main();
   }
 }
 
-function markTaskComplete() {
+async function markTaskComplete() {
+  listTasks(false);
+  const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
+  tasks[selectedTask].isComplete = true;
+  console.clear();
+  listTasks(false);
+  console.log();
   main();
 }
 
 async function deleteTask() {
   listTasks(false);
-  const selectedTask = await getAnswerFromPrompt("Select task # to delete: ");
-  console.clear();
+  const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
   delete tasks[selectedTask];
+  console.clear();
   listTasks(false);
+  console.log();
   main();
 }
 
@@ -90,7 +98,7 @@ function getAnswerFromPrompt(question) {
 }
 
 async function main() {
-  const answer = await getAnswerFromPrompt("1) Add Task\n2) List Task\n4) Delete Task\n\nChoose Option: ");
+  const answer = await getAnswerFromPrompt(`${colorText.blue("1) Add Task\n2) List Tasks\n3) Complete Task\n4) Delete Task")}\n\nChoose Option: `);
   userInput(answer);
 }
 
