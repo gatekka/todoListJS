@@ -79,8 +79,15 @@ function createTask(taskName) {
 }
 
 async function addTask() {
-  const taskName = await getAnswerFromPrompt("Enter task name: ");
   tasks = tasks.filter(item => item !== undefined);
+  const taskName = await getAnswerFromPrompt("Enter task name: ");
+
+  if (taskName === "") { //TODO: Somehow DRY?
+    console.clear();
+    main();
+    return;
+  }
+
   tasks[tasks.length] = createTask(taskName);
   saveTasksToFile();
   console.clear();
@@ -105,7 +112,7 @@ async function markTaskComplete() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
 
-  if (selectedTask === "") {
+  if (selectedTask === "") { //TODO: Somehow DRY?
     console.clear();
     main();
     return;
@@ -124,6 +131,12 @@ async function markTaskComplete() {
 async function deleteTask() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
+
+  if (selectedTask === "") { //TODO: Somehow DRY?
+    console.clear();
+    main();
+    return;
+  }
 
   delete tasks[selectedTask];
   saveTasksToFile();
