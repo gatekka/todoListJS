@@ -31,23 +31,6 @@ async function awaitInputMatch(key = "") {
   } while (isPressedEnter != key) { }
 }
 
-async function loadTasks() {
-  const fileContents = await readFileToString(fileName);
-  try {
-    if (fileContents !== undefined) {
-      tasks = JSON.parse(fileContents);
-    }
-  } catch (error) {
-    debugMode ? console.log(error) : null;
-  }
-}
-
-function saveTasksToFile() {
-  tasks = tasks.filter(item => item !== undefined);
-  const tasksToString = JSON.stringify(tasks);
-  writeStringToFile(tasksToString, fileName);
-}
-
 async function readFileToString(fileName) {
   const fs = require('fs').promises;
   try {
@@ -74,6 +57,41 @@ async function writeStringToFile(content = requiredArg(), fileName = requiredArg
   }
 }
 
+async function loadTasksFromFile() {
+  const fileContents = await readFileToString(fileName);
+  try {
+    if (fileContents !== undefined) {
+      tasks = JSON.parse(fileContents);
+    }
+  } catch (error) {
+    debugMode ? console.log(error) : null;
+  }
+}
+
+function saveTasksToFile() {
+  tasks = tasks.filter(item => item !== undefined);
+  const tasksToString = JSON.stringify(tasks);
+  writeStringToFile(tasksToString, fileName);
+}
+
+function checkEmptyTasks(prompt) {
+  if (tasks.length === 0) {
+    console.log(prompt);
+    main();
+    return true;
+  }
+  return false;
+}
+
+function checkEmptyInput(input) {
+  if (input === "") {
+    console.clear();
+    main();
+    return true;
+  }
+  return false;
+}
+
 function createTask(taskName) {
   return { taskName, isComplete: false };
 }
@@ -82,11 +100,7 @@ async function addTask() {
   tasks = tasks.filter(item => item !== undefined);
   const taskName = await getAnswerFromPrompt("Enter task name: ");
 
-  if (taskName === "") { //TODO: Somehow DRY?
-    console.clear();
-    main();
-    return;
-  }
+  if (checkEmptyInput(taskName)) return;
 
   tasks[tasks.length] = createTask(taskName);
   saveTasksToFile();
@@ -112,11 +126,7 @@ async function markTaskComplete() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
 
-  if (selectedTask === "") { //TODO: Somehow DRY?
-    console.clear();
-    main();
-    return;
-  }
+  if (checkEmptyInput(selectedTask)) return;
 
   tasks[selectedTask].isComplete = true;
   saveTasksToFile();
@@ -132,11 +142,7 @@ async function deleteTask() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
 
-  if (selectedTask === "") { //TODO: Somehow DRY?
-    console.clear();
-    main();
-    return;
-  }
+  if (checkEmptyInput(selectedTask)) return;
 
   delete tasks[selectedTask];
   saveTasksToFile();
@@ -155,27 +161,15 @@ function userInput(input) {
       addTask();
       break;
     case 2:
-      if (tasks.length === 0) {
-        console.log("No tasks to list.\n");
-        main();
-        return;
-      }
+      if (checkEmptyTasks("No tasks to list.\n")) return;
       listTasks();
       break;
     case 3:
-      if (tasks.length === 0) {
-        console.log("No tasks to complete.\n");
-        main();
-        return;
-      }
+      if (checkEmptyTasks("No tasks to complete.\n")) return;
       markTaskComplete();
       break;
     case 4:
-      if (tasks.length === 0) {
-        console.log("No tasks to delete.\n");
-        main();
-        return;
-      }
+      if (checkEmptyTasks("No tasks to delete.\n")) return;
       deleteTask();
       break;
     default:
@@ -198,7 +192,7 @@ function getAnswerFromPrompt(question) {
 }
 
 async function main() {
-  await loadTasks();
+  await loadTasksFromFile();
   const answer = await getAnswerFromPrompt(`${colorText.blue("1) Add Task\n2) List Tasks\n3) Complete Task\n4) Delete Task")}\n\nChoose Option: `);
   userInput(answer);
 }
