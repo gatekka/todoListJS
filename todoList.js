@@ -118,7 +118,7 @@ async function addTask() {
 async function listTasks(callMain = true) {
   tasks = tasks.filter(item => item !== undefined);
   for (let i = 0; i < tasks.length; i++) {
-    console.log(`[${colorText.blue(tasks[i].indexPosition)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${colorText.yellow(tasks[i].isComplete)} }`);
+    console.log(`[${colorText.blue(tasks[i].indexPosition)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${tasks[i].isComplete ? colorText.green(tasks[i].isComplete) : colorText.yellow(tasks[i].isComplete)} }`);
   }
 
   if (callMain) {
