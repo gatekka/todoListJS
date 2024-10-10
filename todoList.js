@@ -76,7 +76,7 @@ function saveTasksToFile() {
 
 function checkEmptyTasks(prompt) {
   if (tasks.length === 0) {
-    console.log(prompt);
+    console.log(colorText.yellow(prompt));
     main();
     return true;
   }
@@ -92,8 +92,14 @@ function checkEmptyInput(input) {
   return false;
 }
 
+function updateIndexPositions() {
+  tasks.forEach((task, index) => {
+    task.indexPosition = index + 1;
+  });
+}
+
 function createTask(taskName) {
-  return { taskName, isComplete: false };
+  return { indexPosition: tasks.length + 1, taskName, isComplete: false };
 }
 
 async function addTask() {
@@ -112,7 +118,7 @@ async function addTask() {
 async function listTasks(callMain = true) {
   tasks = tasks.filter(item => item !== undefined);
   for (let i = 0; i < tasks.length; i++) {
-    console.log(`[${colorText.blue(i)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${colorText.yellow(tasks[i].isComplete)} }`);
+    console.log(`[${colorText.blue(tasks[i].indexPosition)}] { Task: ${colorText.green(tasks[i].taskName)}, Complete: ${colorText.yellow(tasks[i].isComplete)} }`);
   }
 
   if (callMain) {
@@ -128,7 +134,7 @@ async function markTaskComplete() {
 
   if (checkEmptyInput(selectedTask)) return;
 
-  tasks[selectedTask].isComplete = true;
+  tasks[selectedTask - 1].isComplete = true;
   saveTasksToFile();
   console.clear();
   listTasks(false);
@@ -141,10 +147,10 @@ async function markTaskComplete() {
 async function deleteTask() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
-
   if (checkEmptyInput(selectedTask)) return;
 
-  delete tasks[selectedTask];
+  tasks.splice(selectedTask - 1, 1);
+  updateIndexPositions();
   saveTasksToFile();
   console.clear();
   listTasks(false);
