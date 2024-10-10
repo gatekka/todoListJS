@@ -131,12 +131,9 @@ async function listTasks(callMain = true) {
 async function toggleTaskCompleteStatus() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
+  if (checkEmptyInput(selectedTask)) return;
 
-  if (tasks[selectedTask - 1].isComplete) {
-    tasks[selectedTask - 1].isComplete = false;
-  } else {
-    tasks[selectedTask - 1].isComplete = true;
-  }
+  tasks[selectedTask - 1].isComplete = !tasks[selectedTask - 1].isComplete;
 
   saveTasksToFile();
   console.clear();
