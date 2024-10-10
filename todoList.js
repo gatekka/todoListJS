@@ -128,13 +128,16 @@ async function listTasks(callMain = true) {
   }
 }
 
-async function markTaskComplete() {
+async function toggleTaskCompleteStatus() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to complete: ");
 
-  if (checkEmptyInput(selectedTask)) return;
+  if (tasks[selectedTask - 1].isComplete) {
+    tasks[selectedTask - 1].isComplete = false;
+  } else {
+    tasks[selectedTask - 1].isComplete = true;
+  }
 
-  tasks[selectedTask - 1].isComplete = true;
   saveTasksToFile();
   console.clear();
   listTasks(false);
@@ -172,7 +175,7 @@ function userInput(input) {
       break;
     case 3:
       if (checkEmptyTasks("No tasks to complete.\n")) return;
-      markTaskComplete();
+      toggleTaskCompleteStatus();
       break;
     case 4:
       if (checkEmptyTasks("No tasks to delete.\n")) return;
