@@ -162,23 +162,26 @@ async function deleteTask() {
 
 function userInput(input) {
   console.clear();
-  switch (parseInt(input)) {
-    case 1:
+  switch (input.toLowerCase()) {
+    case "1":
       addTask();
       break;
-    case 2:
+    case "2":
       if (checkEmptyTasks("No tasks to list.\n")) return;
       listTasks();
       break;
-    case 3:
+    case "3":
       if (checkEmptyTasks("No tasks to complete.\n")) return;
       toggleTaskCompleteStatus();
       break;
-    case 4:
+    case "4":
       if (checkEmptyTasks("No tasks to delete.\n")) return;
       deleteTask();
       break;
+    case "exit":
+      break;
     default:
+      main();
       break;
   }
 }
@@ -199,7 +202,7 @@ function getAnswerFromPrompt(question) {
 
 async function main() {
   await loadTasksFromFile();
-  const answer = await getAnswerFromPrompt(`${colorText.blue("1) Add Task\n2) List Tasks\n3) Complete Task\n4) Delete Task")}\n\nChoose Option: `);
+  const answer = await getAnswerFromPrompt(`${colorText.blue("1) Add Task\n2) List Tasks\n3) Complete Task\n4) Delete Task\n\n")}${colorText.blue("Type ")}${colorText.red("Exit ")}${colorText.blue("to exit.")} \n\nChoose Option: `);
   userInput(answer);
 }
 
