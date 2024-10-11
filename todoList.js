@@ -179,6 +179,7 @@ function userInput(input) {
       deleteTask();
       break;
     case "exit":
+      process.exit(0);
       break;
     default:
       main();
