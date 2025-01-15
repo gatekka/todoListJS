@@ -101,6 +101,16 @@ function saveTasksToFile() {
   writeStringToFile(tasksToString, fileName);
 }
 
+function checkIfTaskExists(selectedTask: string): boolean {
+  if (parseInt(selectedTask) < 1 || parseInt(selectedTask) > tasks.length) {
+    console.clear();
+    console.log(`${colorText.purple("Task doesn't exist.")}\n`);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function checkEmptyTasks(prompt: string) {
   if (tasks.length === 0) {
     console.log(colorText.yellow(prompt));
@@ -162,7 +172,12 @@ async function toggleTaskCompleteStatus() {
   const selectedTask = await getAnswerFromPrompt(
     "\nSelect task # to complete: ",
   );
+
   if (checkEmptyInput(selectedTask)) return;
+  if (checkIfTaskExists(selectedTask)) {
+    toggleTaskCompleteStatus();
+    return;
+  }
 
   tasks[parseInt(selectedTask) - 1].isComplete =
     !tasks[parseInt(selectedTask) - 1].isComplete;
@@ -179,7 +194,12 @@ async function toggleTaskCompleteStatus() {
 async function deleteTask() {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
+
   if (checkEmptyInput(selectedTask)) return;
+  if (checkIfTaskExists(selectedTask)) {
+    deleteTask();
+    return;
+  }
 
   tasks.splice(parseInt(selectedTask) - 1, 1);
   updateIndexPositions();
