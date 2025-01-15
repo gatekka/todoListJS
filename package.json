@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "npx tsc --strict --watch ./typescript/todoList.ts",
+    "start": "node ./typescript/todoList.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.6",
+    "typescript": "^5.7.3"
+  }
+}

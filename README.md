@@ -9,6 +9,7 @@ Small CLI task management system made in Node.js
 - [Node.js](https://nodejs.org/en/download/package-manager)
 
 Run program with Node:
+
 ```bash
-node todoList.js
+node run start
 ```
