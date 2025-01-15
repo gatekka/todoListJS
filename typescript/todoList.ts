@@ -36,7 +36,7 @@ function requiredArg(): never {
   throw new Error("Argument required.");
 }
 
-async function awaitInputMatch(key: string = "") {
+async function awaitInputMatch(key: string = ""): Promise<void> {
   switch (key) {
     case "":
       console.log(`\nPress ${colorText.red("Enter")} To Exit`);
@@ -53,11 +53,11 @@ async function awaitInputMatch(key: string = "") {
   }
 }
 
-async function readFileToString(fileName: string) {
+async function readFileToString(fileName: string): Promise<string | undefined> {
   const fs = require("fs").promises;
   try {
-    let fileContents = await fs.readFile(fileName);
-    return fileContents.toString();
+    let fileContents: string = await fs.readFile(fileName);
+    return fileContents;
   } catch (error) {
     switch (error.code) {
       case "ENOENT":
@@ -75,7 +75,7 @@ async function readFileToString(fileName: string) {
 async function writeStringToFile(
   content: string = requiredArg(),
   fileName: string = requiredArg(),
-) {
+): Promise<void> {
   const fs = require("fs").promises;
   try {
     await fs.writeFile(fileName, content);
@@ -84,7 +84,7 @@ async function writeStringToFile(
   }
 }
 
-async function loadTasksFromFile() {
+async function loadTasksFromFile(): Promise<void> {
   const fileContents = await readFileToString(fileName);
   try {
     if (fileContents !== undefined) {
@@ -95,7 +95,7 @@ async function loadTasksFromFile() {
   }
 }
 
-function saveTasksToFile() {
+function saveTasksToFile(): void {
   tasks = tasks.filter((item) => item !== undefined);
   const tasksToString = JSON.stringify(tasks);
   writeStringToFile(tasksToString, fileName);
@@ -111,7 +111,7 @@ function checkIfTaskExists(selectedTask: string): boolean {
   }
 }
 
-function checkEmptyTasks(prompt: string) {
+function checkEmptyTasks(prompt: string): boolean {
   if (tasks.length === 0) {
     console.log(colorText.yellow(prompt));
     main();
@@ -129,7 +129,7 @@ function checkEmptyInput(input: string): boolean {
   return false;
 }
 
-function updateIndexPositions() {
+function updateIndexPositions(): void {
   tasks.forEach((task, index) => {
     task.indexPosition = index + 1;
   });
@@ -139,7 +139,7 @@ function createTask(taskName: string): Task {
   return { indexPosition: tasks.length + 1, taskName, isComplete: false };
 }
 
-async function addTask() {
+async function addTask(): Promise<void> {
   tasks = tasks.filter((item) => item !== undefined);
   const taskName = await getAnswerFromPrompt("Enter task name: ");
 
@@ -167,7 +167,7 @@ async function listTasks(callMain: boolean = true): Promise<void> {
   }
 }
 
-async function toggleTaskCompleteStatus() {
+async function toggleTaskCompleteStatus(): Promise<void> {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt(
     "\nSelect task # to complete: ",
@@ -191,7 +191,7 @@ async function toggleTaskCompleteStatus() {
   main();
 }
 
-async function deleteTask() {
+async function deleteTask(): Promise<void> {
   listTasks(false);
   const selectedTask = await getAnswerFromPrompt("\nSelect task # to delete: ");
 
@@ -212,7 +212,7 @@ async function deleteTask() {
   main();
 }
 
-function userInput(input: string) {
+function userInput(input: string): void {
   console.clear();
   switch (input.toLowerCase()) {
     case "1":
@@ -253,7 +253,7 @@ function getAnswerFromPrompt(question: string): Promise<string> {
   });
 }
 
-async function main() {
+async function main(): Promise<void> {
   await loadTasksFromFile();
   const answer = await getAnswerFromPrompt(
     `${colorText.blue("1) Add Task\n2) List Tasks\n3) Complete Task\n4) Delete Task\n\n")}${colorText.blue("Type ")}${colorText.red("Exit ")}${colorText.blue("to exit.")} \n\nChoose Option: `,
